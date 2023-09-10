@@ -6,7 +6,8 @@ describe("ERC1155", function () {
   let owner: { address: any; };
   let recipient: { address: any; };
   let operator: { address: any; };
-  let erc1155: { deployed: () => any; mint: (arg0: any, arg1: number, arg2: number) => any; setApprovalForAll: (arg0: any, arg1: boolean) => any; connect: (arg0: any) => {
+  let erc1155: {
+      [x: string]: any; deployed: () => any; setApprovalForAll: (arg0: any, arg1: boolean) => any; connect: (arg0: any) => {
       safeBatchTransferFrom(address: any, address1: any, tokenIds: number[], amounts: number[], arg4: string): any; (): any; new(): any; safeTransferFrom: { (arg0: any, arg1: any, arg2: number, arg3: number, arg4: string): any; new(): any; }; 
 }; balanceOf: (arg0: any, arg1: number) => any; };
 
@@ -37,8 +38,8 @@ describe("ERC1155", function () {
         const tokenId = 1;
         const amount = 100;
 
-        // Mint tokens to the owner
-        await erc1155.mint(owner.address, tokenId, amount);
+        // // Mint tokens to the owner
+        await erc1155.mint(owner.address, tokenId, amount,"0x");
 
         // Approve the operator to transfer tokens on behalf of the owner
         await erc1155.setApprovalForAll(operator.address, true);
@@ -61,6 +62,8 @@ describe("ERC1155", function () {
     it('should revert unapproved transaction',async function(){
         const tokenIds = [1,2,3];
         const amounts = [100,2,4];
+        // Ensure the operator is not approved
+        await erc1155.setApprovalForAll(operator.address, false);
         await expect( erc1155.connect(operator).safeBatchTransferFrom(owner.address, recipient.address, tokenIds, amounts, "0x")).to.be.revertedWith("not approved")
     }),
 
@@ -85,8 +88,8 @@ describe("ERC1155", function () {
     it("should transfer tokens correctly", async function () {
         const tokenIds = [1,2,3];
         const amounts = [100,2,4];
-        // Mint tokens to the owner
-        // await erc1155.mint(owner.address, tokenId, amount);
+        // // Mint tokens to the owner
+        await erc1155.mint(owner.address, 1, 400,'0x');
 
         // Approve the operator to transfer tokens on behalf of the owner
         await erc1155.setApprovalForAll(operator.address, true);
